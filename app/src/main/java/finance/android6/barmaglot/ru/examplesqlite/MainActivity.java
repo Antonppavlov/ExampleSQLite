@@ -68,9 +68,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     do {
                         Log.i("Log",
-                                        "ID = " + cursor.getColumnName(idIndex) + "\n" +
-                                        "NAME = " + cursor.getColumnName(nameIndex) + "\n" +
-                                        "EMAIL = " + cursor.getColumnName(emailIndex) + "\n"
+                                        "ID = " + cursor.getString(idIndex) + "\n" +
+                                        "NAME = " + cursor.getString(nameIndex) + "\n" +
+                                        "EMAIL = " + cursor.getString(emailIndex) + "\n"
 
 
                         );

@@ -1,14 +1,16 @@
 package finance.android6.barmaglot.ru.examplesqlite;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.List;
+
+import finance.android6.barmaglot.ru.examplesqlite.obj.Contact;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -18,8 +20,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText editName;
     EditText editEmail;
 
+    TextView textView;
 
-    DBHelper dbHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,58 +38,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         editName = (EditText) findViewById(R.id.name);
-        editEmail = (EditText) findViewById(R.id.email);
+        editEmail = (EditText) findViewById(R.id.mail);
 
+        textView = (TextView) findViewById(R.id.textView);
 
     }
 
 
     @Override
     public void onClick(View v) {
-        dbHelper = new DBHelper(getApplicationContext());
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-
-        String textName = editName.getText().toString();
+         String textName = editName.getText().toString();
         String textEmail = editEmail.getText().toString();
 
         switch (v.getId()) {
             case R.id.buttonAdd: {
-                contentValues.put(DBHelper.KEY_NAME, textName);
-                contentValues.put(DBHelper.KEY_EMAIL, textEmail);
-
-                database.insert(DBHelper.TABLE_CONTACTS, null, contentValues);
+                Contact contact = new Contact(textEmail, textName);
+                contact.save();
                 break;
             }
             case R.id.buttonRead: {
-                Cursor cursor = database.query(DBHelper.TABLE_CONTACTS, null, null, null, null, null, null);
-
-                if (cursor.moveToFirst()) {
-                    int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
-                    int nameIndex = cursor.getColumnIndex(DBHelper.KEY_NAME);
-                    int emailIndex = cursor.getColumnIndex(DBHelper.KEY_EMAIL);
-
-                    do {
-                        Log.i("Log",
-                                        "ID = " + cursor.getString(idIndex) + "\n" +
-                                        "NAME = " + cursor.getString(nameIndex) + "\n" +
-                                        "EMAIL = " + cursor.getString(emailIndex) + "\n"
-
-
-                        );
-                    } while (cursor.moveToNext());
-                }
-                else {
-                    Log.i("Log","0 rows");
-                }
-                cursor.close();
+                List<Contact> contactses = Contact.listAll(Contact.class);
+                Log.i("Contact", contactses.toString());
+                textView.setText(contactses.toString());
                 break;
             }
             case R.id.buttonClear: {
-                database.delete(DBHelper.TABLE_CONTACTS, null, null);
+                Contact.deleteAll(Contact.class);
                 break;
             }
         }
-        dbHelper.close();
     }
 }
